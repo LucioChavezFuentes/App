@@ -2,8 +2,10 @@ import React, {memo} from 'react';
 import PropTypes from 'prop-types';
 import {Animated, View} from 'react-native';
 import ReactDOM from 'react-dom';
+import _ from 'underscore';
 import getTooltipStyles from '../../styles/getTooltipStyles';
 import Text from '../Text';
+import variables from '../../styles/variables';
 
 const propTypes = {
     /** Window width */
@@ -47,6 +49,13 @@ const propTypes = {
 
     /** Callback to be used to calulate the width and height of tooltip */
     measureTooltip: PropTypes.func.isRequired,
+
+    /** When true, each word of text will be placed in its own line */
+    displayWordPerLine: PropTypes.bool.isRequired,
+
+    /** Maximun amount of words the tooltip should show */
+    maximumWords: PropTypes.number.isRequired,
+
 };
 
 const defaultProps = {};
@@ -70,13 +79,27 @@ const TooltipRenderedOnPageBody = (props) => {
         props.shiftHorizontal,
         props.shiftVertical,
     );
+    const maximumWords = props.maximumWords;
+    const wordsProvided = props.text.split(' ');
+    const wordsToShow = wordsProvided.slice(0, maximumWords);
+    function setWordsInsideTexts() {
+        return _.map(wordsToShow, text => <Text style={tooltipTextStyle}>{text}</Text>);
+    }
+
+    function shouldShowElipsis() {
+        return (
+            wordsProvided.length > maximumWords ? <Text style={{...tooltipTextStyle, lineHeight: variables.fontSizeExtraSmall}}>...</Text> : <Text />
+        );
+    }
+
     return ReactDOM.createPortal(
         <Animated.View
             ref={props.setTooltipRef}
             onLayout={props.measureTooltip}
             style={[tooltipWrapperStyle, animationStyle]}
         >
-            <Text style={tooltipTextStyle} numberOfLines={1}>{props.text}</Text>
+            {props.displayWordPerLine ? setWordsInsideTexts() : <Text style={tooltipTextStyle}>{props.text}</Text>}
+            {shouldShowElipsis()}
             <View style={pointerWrapperStyle}>
                 <View style={pointerStyle} />
             </View>

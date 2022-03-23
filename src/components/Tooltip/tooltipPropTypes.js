@@ -24,6 +24,12 @@ const propTypes = {
     /** Any additional amount to manually adjust the vertical position of the tooltip.
     A positive value shifts the tooltip down, and a negative value shifts it up. */
     shiftVertical: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+
+    /** When true, each word of text will be placed in its own line */
+    displayWordPerLine: PropTypes.bool,
+
+    /** Maximun amount of words the tooltip should show */
+    maximumWords: PropTypes.number,
 };
 
 const defaultProps = {
@@ -32,6 +38,8 @@ const defaultProps = {
     shiftVertical: 0,
     containerStyles: [],
     text: '',
+    maximumWords: 8,
+    displayWordPerLine: false,
 };
 
 export {
